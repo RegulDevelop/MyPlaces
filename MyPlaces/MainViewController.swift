@@ -9,10 +9,7 @@ import UIKit
 
 class MainViewController: UITableViewController {
     
-    let restaurantNames = ["Burger Heroes", "Kitchen", "Bonsai", "Дастархан",
-                           "Индокитай", "X.O", "Балкан Гриль", "Sherlock Holmes",
-                           "Speak Easy", "Morris Pub", "Вкусные истории",
-                           "Классик", "Love&Life", "Шок", "Бочка"]
+    let places = Place.getPlaces()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,28 +20,23 @@ class MainViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return restaurantNames.count
+        return places.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         // dlya raboty s classom CustomTableViewCell podpisyvaem cell k CustomTableViewCell dlya raboty s outletami classa
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! CustomTableViewCell
         
-        cell.nameLabel.text = restaurantNames[indexPath.row]
-        cell.imageOfPlace.image = UIImage(named: restaurantNames[indexPath.row])
+        cell.nameLabel.text = places[indexPath.row].name
+        cell.locationLabel.text = places[indexPath.row].location
+        cell.typeLabel.text = places[indexPath.row].type
+        cell.imageOfPlace.image = UIImage(named: places[indexPath.row].image)
         // skruglyaem kartinku, vysotu stroki delem na 2
         cell.imageOfPlace.layer.cornerRadius = cell.imageOfPlace.frame.size.height / 2
         // obrezka izobrajeniya po granicam imageView
         cell.imageOfPlace.clipsToBounds = true
 
         return cell
-    }
-    
-    // MARK: - Table view delegate
-    
-    // Vysota stroki
-    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 85
     }
 
     /*
