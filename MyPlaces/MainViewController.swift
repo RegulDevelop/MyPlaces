@@ -31,8 +31,19 @@ class MainViewController: UITableViewController {
         
         cell.textLabel?.text = restaurantNames[indexPath.row]
         cell.imageView?.image = UIImage(named: restaurantNames[indexPath.row])
+        // skruglyaem kartinku, vysotu stroki delem na 2
+        cell.imageView?.layer.cornerRadius = cell.frame.size.height / 2
+        // obrezka izobrajeniya po granicam imageView
+        cell.imageView?.clipsToBounds = true
 
         return cell
+    }
+    
+    // MARK: - Table view delegate
+    
+    // Vysota stroki
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 85
     }
 
     /*
