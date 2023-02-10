@@ -48,5 +48,8 @@ class MainViewController: UITableViewController {
         // Pass the selected object to the new view controller.
     }
     */
+    
+    // Knopka cancel dlia vyhoda na osnovnoi ekran
+    @IBAction func cancelAction(_ segue: UIStoryboardSegue) {}
 
 }
