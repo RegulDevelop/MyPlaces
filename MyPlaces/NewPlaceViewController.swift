@@ -8,7 +8,9 @@
 import UIKit
 
 class NewPlaceViewController: UITableViewController {
-
+    
+    @IBOutlet weak var imageOfPlace: UIImageView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -59,16 +61,26 @@ extension NewPlaceViewController: UITextFieldDelegate {
 
 // MARK: - Work with image
 
-extension NewPlaceViewController {
+extension NewPlaceViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     // UIImagePickerController - upravlyaet interfeisami dlya s'emki foto, zapisi video, ivybor izobrajeniya iz mediateki pol'zovatelya
     func chooseImagePicker(source: UIImagePickerController.SourceType) {
         
         if UIImagePickerController.isSourceTypeAvailable(source) {
             let imagePicker = UIImagePickerController()
+            imagePicker.delegate = self
             imagePicker.allowsEditing = true
             imagePicker.sourceType = source
             self.present(imagePicker, animated: true)
         }
+    }
+    
+    // Dobavit' foto
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        // pozvolyaet ispol'zovat' otredektirovannoe pol'zovatelem izobrajenie
+        imageOfPlace.image = info[.editedImage] as? UIImage
+        imageOfPlace.contentMode = .scaleAspectFill // pozvalyaem redektorovat' izobrajenie po soderjimomu UIImage
+        imageOfPlace.clipsToBounds = true // obrezka po granicam UIImage
+        dismiss(animated: true) // zakryt' ImagePickerController
     }
 }
