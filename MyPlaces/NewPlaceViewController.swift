@@ -22,6 +22,10 @@ class NewPlaceViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         if indexPath.row == 0 { // eli index = 0 (kartinka) to nichego ne delaem
+            
+            let cameraIcon = UIImage(named: "camera")
+            let photoIcon = UIImage(named: "photo")
+            
             let actionSheet = UIAlertController(title: nil,
                                                 message: nil,
                                                 preferredStyle: .actionSheet) // sozdaem AlertController s nijnim menyu
@@ -30,9 +34,15 @@ class NewPlaceViewController: UITableViewController {
                 self.chooseImagePicker(source: .camera)
             }
             
+            camera.setValue(cameraIcon, forKey: "image") // dobavlyaem ikonku camera
+            camera.setValue(CATextLayerAlignmentMode.left, forKey: "titleTextAlignment") // nadpis' camera sleva ryadom s ikonkoi
+            
             let photo = UIAlertAction(title: "Photo", style: .default) { _ in // knopka photo
                 self.chooseImagePicker(source: .photoLibrary)
             }
+            
+            photo.setValue(photoIcon, forKey: "image") // dobavlyaem ikonku foto
+            photo.setValue(CATextLayerAlignmentMode.left, forKey: "titleTextAlignment") // nadpis' photo sleva ryadom s ikonkoi
             
             let cancel = UIAlertAction(title: "Cancel", style: .cancel) // knopka cancel
             
