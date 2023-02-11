@@ -6,31 +6,37 @@
 //
 
 import UIKit
+import RealmSwift
 
 class MainViewController: UITableViewController {
     
-    let places = Place.getPlaces()
+    var places: Results<Place>!
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        places = realm.objects(Place.self)
 
     }
 
     // MARK: - Table view data source
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
-        return places.count
+        // esli massiv pustoi to 0 esli net kolichestvo kolecii
+        return places.isEmpty ? 0 : places.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         // dlya raboty s classom CustomTableViewCell podpisyvaem cell k CustomTableViewCell dlya raboty s outletami classa
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! CustomTableViewCell
-        
-        cell.nameLabel.text = places[indexPath.row].name
-        cell.locationLabel.text = places[indexPath.row].location
-        cell.typeLabel.text = places[indexPath.row].type
-        cell.imageOfPlace.image = UIImage(named: places[indexPath.row].image)
+
+        let place = places[indexPath.row]
+
+        cell.nameLabel.text = place.name
+        cell.locationLabel.text = place.location
+        cell.typeLabel.text = place.type
+        cell.imageOfPlace.image = UIImage(data: place.imageData!)
+
         // skruglyaem kartinku, vysotu stroki delem na 2
         cell.imageOfPlace.layer.cornerRadius = cell.imageOfPlace.frame.size.height / 2
         // obrezka izobrajeniya po granicam imageView
@@ -38,6 +44,22 @@ class MainViewController: UITableViewController {
 
         return cell
     }
+    
+    //MARK: - Table view delegate
+    
+    // udalenie
+    override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+        
+        let place = places[indexPath.row]
+        let deleteAction = UITableViewRowAction(style: .default, title: "Delete") { _, _ in
+            
+            StorageManager.deleteObject(place)
+            tableView.deleteRows(at: [indexPath], with: .automatic)
+        }
+        
+        return [deleteAction]
+    }
+    
 
     /*
     // MARK: - Navigation
@@ -49,7 +71,13 @@ class MainViewController: UITableViewController {
     }
     */
     
-    // Knopka cancel dlia vyhoda na osnovnoi ekran
-    @IBAction func cancelAction(_ segue: UIStoryboardSegue) {}
+    // Knopka save dlia vyhoda na osnovnoi ekran
+    @IBAction func unwindSegue(_ segue: UIStoryboardSegue) {
+        
+        guard let newPlaceVC = segue.source as? NewPlaceViewController else { return }
+        
+        newPlaceVC.saveNewPlace()
+        tableView.reloadData()
+    }
 
 }

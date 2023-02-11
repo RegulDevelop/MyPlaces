@@ -9,11 +9,25 @@ import UIKit
 
 class NewPlaceViewController: UITableViewController {
     
-    @IBOutlet weak var imageOfPlace: UIImageView!
+    var imageIsChanged = false
+    
+    @IBOutlet weak var saveButton: UIBarButtonItem!
+    
+    @IBOutlet weak var placeImage: UIImageView!
+    @IBOutlet weak var placeName: UITextField!
+    @IBOutlet weak var placeLocation: UITextField!
+    @IBOutlet weak var placeType: UITextField!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        tableView.tableFooterView = UIView()
+        
+        // knopka saveButton nedostupna
+        saveButton.isEnabled = false
 
+        // kajdyi raz pri redoktirovanii tekstovogo polya placeName budet srabatyvat' etot metod kotoryi budet vyzyvat' metot textFieldChanged, textFieldChanged budet sledit' zapolneno tekstovoe pole ili net
+        placeName.addTarget(self, action: #selector(textFieldChanged), for: .editingChanged)
     }
     
     // MARK: - Table view delegate
@@ -55,7 +69,32 @@ class NewPlaceViewController: UITableViewController {
             view.endEditing(true) // esli drugoi index to skryvaem klaviaturu
         }
     }
+    
+    // sohranit' fail
+    func saveNewPlace() {
+        
+        var image: UIImage?
+        if imageIsChanged {
+            image = placeImage.image
+        } else {
+            image = UIImage(named: "imagePlaceholder")
+        }
+        
+        let imageData = image?.pngData()
 
+        let newPlace = Place(name: placeName.text!,
+                             location: placeLocation.text,
+                             type: placeType.text,
+                             imageData: imageData)
+        
+        StorageManager.saveObject(newPlace)
+    }
+    
+    // knopka cancel
+    @IBAction func cancelAction(_ sender: Any) {
+        dismiss(animated: true)
+    }
+    
 }
 
 // MARK: - Text field delegate
@@ -66,6 +105,15 @@ extension NewPlaceViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
+    }
+    
+    @objc private func textFieldChanged() {
+        
+        if placeName.text?.isEmpty == false { // esli pole placeName ne pustoe
+            saveButton.isEnabled = true // to knopka doljna byt' dostupna
+        } else {
+            saveButton.isEnabled = false // esli pustoe to nedostupna
+        }
     }
 }
 
@@ -88,9 +136,12 @@ extension NewPlaceViewController: UIImagePickerControllerDelegate, UINavigationC
     // Dobavit' foto
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         // pozvolyaet ispol'zovat' otredektirovannoe pol'zovatelem izobrajenie
-        imageOfPlace.image = info[.editedImage] as? UIImage
-        imageOfPlace.contentMode = .scaleAspectFill // pozvalyaem redektorovat' izobrajenie po soderjimomu UIImage
-        imageOfPlace.clipsToBounds = true // obrezka po granicam UIImage
+        placeImage.image = info[.editedImage] as? UIImage
+        placeImage.contentMode = .scaleAspectFill // pozvalyaem redektorovat' izobrajenie po soderjimomu UIImage
+        placeImage.clipsToBounds = true // obrezka po granicam UIImage
+        
+        imageIsChanged = true
+        
         dismiss(animated: true) // zakryt' ImagePickerController
     }
 }
